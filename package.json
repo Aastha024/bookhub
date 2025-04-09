@@ -10,13 +10,16 @@
   },
   "dependencies": {
     "@types/jsonwebtoken": "^9.0.9",
+    "@types/multer": "^1.4.12",
     "bcryptjs": "^3.0.2",
     "class-validator": "^0.14.1",
+    "cloudinary": "^2.6.0",
     "dotenv": "^16.4.7",
     "express": "^5.1.0",
     "husky": "^9.1.7",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.13.1",
+    "multer": "^1.4.5-lts.2",
     "nodemon": "^3.1.9"
   },
   "devDependencies": {
@@ -27,11 +30,9 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.8.2"
   },
-  
- "husky": {
-  "hooks": {
-    "pre-commit": "lint-staged"
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   }
-}
-
 }
