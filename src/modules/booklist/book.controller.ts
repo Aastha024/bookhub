@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import postEntity from "../../entities/post.entity";
-import { uploadOnCloudinary } from "../../utils/cloudinary";
+import { uploadOnCloudinary, uploadPDFOnCloudinary } from "../../utils/cloudinary";
 import userEntity from "../../entities/user.entity";
+import pdfEntity from "../../entities/pdf.entity";
 
 interface AuthRequest extends Request {
   postOwner?: any;
@@ -44,7 +45,7 @@ export class BookController {
 
       const uploadResult = await uploadOnCloudinary(image, 'image');
       const uploadedCoverImages = await Promise.all(
-        coverImage.map(file => uploadOnCloudinary(file.path, `coverImage`))
+        coverImage.map(file => uploadOnCloudinary(file.path, `coverImage/${user._id}`))
       );
       const coverImageUrls = uploadedCoverImages.map((result: any) => result.secure_url);
       
@@ -74,8 +75,9 @@ export class BookController {
     }
   };
 
+  
   public getAllPosts = async (req: AuthRequest, res: Response, next: NextFunction): Promise<any> => {
-    try{
+      try{
         const posts = await postEntity.find().populate("postOwner", "name email");
         if (!posts) {
             return res.status(404).json({ message: "No posts found" });
@@ -86,5 +88,46 @@ export class BookController {
         console.error("Error fetching posts:", error);
         next(error);
     }
-  }
+}
+
+// create an endpoint to upload pdf on cloudinary (practice purpose)
+//   public createPdf = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+//     try {
+
+//       const files = req.files as MulterFiles;
+//       console.log("🚀 ~ BookController ~ createPdf= ~ files:", files)
+//       const pdfFile = files['pdf']?.[0].path;
+//       console.log("🚀 ~ BookController ~ createPdf= ~ pdfFile:", pdfFile)
+//       const pdfFiles = files['pdfs'];
+
+//       if (!req.files) {
+//         return res.status(400).json({ message: "PDF upload failed" });
+//       }
+
+//       const uploadResult = await uploadPDFOnCloudinary(pdfFile);
+//       const uploadedPdfFiles = await Promise.all(
+//         pdfFiles.map(file => uploadPDFOnCloudinary(file.path))
+//       );
+//       console.log("🚀 ~ BookController ~ createPdf= ~ uploadedPdfFiles:", uploadedPdfFiles)
+
+//       if (!uploadResult) {
+//         return res.status(500).json({ message: "PDF upload on cloudinary failed" });
+//       }
+
+//       const newPdf = {
+//         pdf: `${uploadResult.secure_url}`,
+//         pdfs: uploadedPdfFiles.map((result: any) => result.secure_url),
+//       };
+//       const post = new pdfEntity(newPdf);
+//       await post.save();
+
+//       return res.status(201).json({
+//         message: "PDF created successfully",
+//         book: newPdf,
+//       });
+//     } catch (error) {
+//       console.error("Error creating PDF:", error);
+//       next(error);
+//     }
+//   }
 }

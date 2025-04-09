@@ -17,7 +17,7 @@ const uploadOnCloudinary = async (localpath: string, folderName: string) => {
             unique_filename: false,
             overwrite: true,
         });
-
+        fs.unlinkSync(localpath); 
         return uploadResult
 
     }catch (error) {
@@ -27,4 +27,20 @@ const uploadOnCloudinary = async (localpath: string, folderName: string) => {
     }    
 }
 
-export { uploadOnCloudinary };
+const uploadPDFOnCloudinary = async (localpath: string) => {
+    try{
+        const uploadResult = await cloudinary.uploader.upload(localpath, {
+            resource_type: 'raw',
+            folder: `pdfs`,
+            
+        });
+        // fs.unlinkSync(localpath); 
+        return uploadResult
+    } catch (error){
+        fs.unlinkSync(localpath);
+        console.error("Error uploading PDF to Cloudinary:", error);
+        throw new Error("Cloudinary PDF upload failed");
+    }
+}
+
+export { uploadOnCloudinary, uploadPDFOnCloudinary };
