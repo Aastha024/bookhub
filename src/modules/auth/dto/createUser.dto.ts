@@ -19,9 +19,9 @@ export class CreateUserDto {
   @MaxLength(Constants.EMAIL_MAX_LENGTH)
   email: string;
 
-  @IsIn(Constants.ROLE, { message: "Role must be either 'buyer' or 'seller'" })
+  @IsString()
   @IsNotEmpty()
-  role: string;
+  roleId: string;
 
   @IsString()
   @IsNotEmpty()
