@@ -43,9 +43,9 @@ const UserSchema: Schema = new Schema(
       ref: "Role",
       required: true,
     },
-    bookId: {
+    productId: {
       type: Schema.Types.ObjectId,
-      ref: "Book",
+      ref: "Product",
       // required: true,
     },
     jwtToken: {

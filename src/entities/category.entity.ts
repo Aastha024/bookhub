@@ -2,8 +2,7 @@ import { time } from "console";
 import mongoose, { Schema, Document } from "mongoose";
 
 interface ICategory extends Document {
-    categoryName: string;
-    description: string;
+    name: string;
 }
 
 const CategorySchema: Schema = new Schema({

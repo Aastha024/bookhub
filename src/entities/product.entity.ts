@@ -1,6 +1,6 @@
 import mongoose, {Schema} from "mongoose";
 
-export interface IBook extends Document {
+export interface IProduct extends Document {
     bookName: string;
     authorId: number;
     description: string;
@@ -9,7 +9,7 @@ export interface IBook extends Document {
     categoryId: number;
   }
 
-const BookSchema: Schema = new Schema({
+const ProductSchema: Schema = new Schema({
     bookName: {
         type: String,
         required: true,
@@ -40,4 +40,4 @@ const BookSchema: Schema = new Schema({
 { timestamps: true }
 )
 
-export const Book = mongoose.model("Book", BookSchema);
+export const Product = mongoose.model("Product", ProductSchema);
