@@ -21,6 +21,7 @@ export class CreateUserDto {
 
   @IsString()
   @IsNotEmpty()
+  // role: string;
   roleId: string;
 
   @IsString()

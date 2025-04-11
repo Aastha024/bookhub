@@ -1,9 +1,9 @@
 import { Bcrypt } from "../../helpers/bcrypt.helper";
-import UserEntity from "../../entities/user.entity";
 import { JwtHelper } from "../../helpers/jwt.helper";
 import { CreateUserDto } from "./dto/createUser.dto";
 import { Request, Response, NextFunction } from "express";
-
+import { User } from "../../entities/user.entity"
+import { Role } from "../../entities/role.entity";
 interface AuthRequest extends Request {
   user?: any;
 }
@@ -11,21 +11,47 @@ interface AuthRequest extends Request {
 export class AuthController {
   public create = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     try {
-      if(req.body.password !== req.body.confirmPassword) {
-        return res.status(400).json({ msg: "Passwords do not match" });
-      }
-      const hashedPassword = await Bcrypt.hash(req.body.password);
-      req.body.password = hashedPassword;
 
-      const existUser = await UserEntity.findOne({ email: req.body.email });
-      if (existUser) {
+      //req.body - firstName, lastName, email, password, roleId
+      // chech whether the user is already registered or not
+      // chech whether the roleId is present correct or not
+      // encrypt the password and apply validation to password and confirm password
+      // generate the token
+      // save the data to database
+      // send the response
+
+      const { firstName, lastName, email, password, confirmPassword, roleId } = req.body;
+
+      const userExist = await User.findOne({ email: req.body.email });
+      if (userExist) {
         return res.status(400).json({ msg: "User already exists" });
       }
 
-      const user = new UserEntity(req.body);
-      await user.save();
+      const roleExist = await Role.findOne({ _id: roleId });
+      if(roleExist){
+        return res.status(400).json({ msg: "Role does not exist" });
+      }
+      if(req.body.password !== req.body.confirmPassword) {
+        return res.status(400).json({ msg: "Passwords do not match" });
+      }
 
-      const token = JwtHelper.encode({ id: user.id });
+      const encryptPassword = await Bcrypt.hash(password);
+      if (!encryptPassword) {
+        return res.status(400).json({ msg: "Password encryption failed" });
+      }
+
+      const user = {
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        password: encryptPassword,
+        roleId: roleId,
+      }
+      
+      const RegistetedUser = new User(user);
+      await RegistetedUser.save();
+      const token = JwtHelper.encode({ id: RegistetedUser.id });
+
 
       return res.status(201).json({ msg: "User created successfully", token });
     } catch (error) {
@@ -36,7 +62,7 @@ export class AuthController {
 
 public signIn = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
   try {
-    const user = await UserEntity.findOne({ email: req.body.email});
+    const user = await User.findOne({ email: req.body.email});
 
     if (!user) {
       return res.status(401).json({ msg: "User not found" });
@@ -71,7 +97,7 @@ public logout = async (req: Request, res: Response, next: NextFunction): Promise
 public deleteUser = async (req: AuthRequest, res: Response, next: NextFunction): Promise<any> => {
   try{
     const userId = req.params.userId;
-      const user = await UserEntity.findOneAndDelete({_id: userId});
+      const user = await User.findOneAndDelete({_id: userId});
       if(!user){
         return res.status(404).json({msg: "User not found"});
       }
@@ -86,7 +112,7 @@ public deleteUser = async (req: AuthRequest, res: Response, next: NextFunction):
 public updateUser = async (req: AuthRequest, res: Response, next: NextFunction): Promise<any> => {
   try{
     const userId = req.params.userId;
-    const user = await UserEntity.findOne({_id: userId});
+    const user = await User.findOne({_id: userId});
 
     if(!user){
       return res.status(404).json({msg: "User not found"});
@@ -95,7 +121,7 @@ public updateUser = async (req: AuthRequest, res: Response, next: NextFunction):
     const hashedPassword = await Bcrypt.hash(req.body.password);
     req.body.password = hashedPassword;
 
-    const updateUser = await UserEntity.findOneAndUpdate(req.body);
+    const updateUser = await User.findOneAndUpdate(req.body);
     await updateUser.save();
     return res.status(200).json({msg: "User updated successfully"});
 

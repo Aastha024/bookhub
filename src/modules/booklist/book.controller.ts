@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import postEntity from "../../entities/post.entity";
 import { uploadOnCloudinary, uploadPDFOnCloudinary } from "../../utils/cloudinary";
-import userEntity from "../../entities/user.entity";
+import { User } from "../../entities/user.entity";
 import pdfEntity from "../../entities/pdf.entity";
 
 interface AuthRequest extends Request {
@@ -21,7 +21,7 @@ export class BookController {
     try {
       const { postOwner, bookName, authorName, description, price } = req.body;
 
-      const user = await userEntity.findOne({ _id: postOwner });
+      const user = await User.findOne({ _id: postOwner });
       if (!user) {
         return res.status(400).json({ message: "Owner is not found!" });
     }
