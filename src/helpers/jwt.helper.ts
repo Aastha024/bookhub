@@ -3,7 +3,7 @@ import { Constants } from "../config/constants";
 
 export class JwtHelper {
   public static encode<T extends object>(data: T) {
-    return jwt.sign(data, `${process.env.JWT_SECRET}_${Constants.JWT_TOKEN_VERSION}`);
+    return jwt.sign(data, `${process.env.JWT_SECRET}_${Constants.JWT_TOKEN_VERSION}`, { expiresIn: '1d' });
   }
 
   public static decode<ResT>(token: string) {
