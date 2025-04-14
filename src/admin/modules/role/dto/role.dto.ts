@@ -5,5 +5,4 @@ export class userRoleDto {
   @IsString()
   @IsNotEmpty()
   role: string;
-
 }

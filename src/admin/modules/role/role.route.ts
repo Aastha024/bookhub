@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { RoleController } from "../role/role.controller";
-import { userRoleDto } from "../role/dto/role.dto";
+import { RoleController } from "./role.controller";
+import { userRoleDto } from "./dto/role.dto";
 import { Validator } from "../../../helpers/validate";
 
 const router = Router();
