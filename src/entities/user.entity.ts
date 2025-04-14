@@ -26,7 +26,8 @@ import mongoose, { Schema, Document } from "mongoose";
 
 export interface IUser extends Document {
   _id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
   role: "buyer" | "seller";
@@ -38,12 +39,12 @@ const UserSchema: Schema = new Schema(
     lastName: { type: String, required: true },
     email: { type: String, required: true, unique: true, lowercase: true, trim: true},
     password: { type: String, required: true },
-    roleId: {
+    role: {
       type: Schema.Types.ObjectId,
       ref: "Role",
       required: true,
     },
-    productId: {
+    products: {
       type: Schema.Types.ObjectId,
       ref: "Product",
       // required: true,

@@ -3,36 +3,36 @@ import { Constants } from "../../../config/constants";
 
 
 export class UpdateUserDto {
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
   @MaxLength(Constants.FIRST_NAME_MAX_LENGTH)
   firstName: string;
 
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
   @MaxLength(Constants.LAST_NAME_MAX_LENGTH)
   lastName: string;
 
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
   @IsEmail()
   @MaxLength(Constants.EMAIL_MAX_LENGTH)
   email: string;
 
+  @IsOptional()
   @IsIn(Constants.ROLE, { message: "Role must be either 'buyer' or 'seller'" })
-  @IsNotEmpty()
   role: string;
 
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
   @Matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).*$/, {
     message: "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character",
   })
   @Length(Constants.PASSWORD_MIN_LENGTH, Constants.PASSWORD_MAX_LENGTH)
   password: string;
 
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
   @Matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).*$/, {
     message: "Confirm Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character",
   })

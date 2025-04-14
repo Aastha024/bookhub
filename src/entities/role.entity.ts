@@ -2,6 +2,7 @@ import { NextFunction } from "express";
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface IRole extends Document {
+    _id: number;
     role: "buyer" | "seller";
   }
 

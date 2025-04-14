@@ -4,6 +4,8 @@ import connectDB from "./config/db";
 import bodyParser from "body-parser";
 import authRoute from "./modules/auth/auth.route";
 import bookRoute from "./modules/booklist/book.route";
+import roleRoute from "./admin/modules/role/role.route"
+import 'module-alias/register';
 
 dotenv.config();
 const app = express();
@@ -21,6 +23,7 @@ app.get("/", (req, res) => {
 });
 app.use("/api/auth", authRoute); 
 app.use("/admin", bookRoute)
+app.use("/admin", roleRoute)
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
