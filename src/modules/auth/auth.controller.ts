@@ -99,8 +99,15 @@ public signIn = async (req: Request, res: Response, next: NextFunction): Promise
       return res.status(401).json({ msg: "Invalid password" });
     }
 
+    const userObj = {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: email,
+      role: user.role,
+    }
+
     const token = JwtHelper.encode({ id: user.id });
-    return res.status(200).json({ msg: "User signed in successfully", token, user });
+    return res.status(200).json({ msg: "User signed in successfully", token, user: userObj });
   } catch (error) {
     console.error("Sign-in error:", error);
     next(error);
@@ -203,8 +210,6 @@ public updateUser = async (req: AuthRequest, res: Response, next: NextFunction):
       }
       updatedUser.password = await Bcrypt.hash(password);
     }
-
-    console.log("updateduser..", updatedUser)
 
     const updateUser = await User.findOneAndUpdate(updatedUser);
     await updateUser.save();

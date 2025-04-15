@@ -17,7 +17,7 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   @IsEmail()
-  @MaxLength(Constants.EMAIL_MAX_LENGTH)
+  @MaxLength(Constants.EMAIL_MAX_LENGTH, {message: "Please enter an email"})
   email: string;
 
   @IsString()
