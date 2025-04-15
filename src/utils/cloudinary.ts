@@ -12,7 +12,7 @@ const uploadOnCloudinary = async (localpath: string, folderName: string) => {
     try{
         const uploadResult = await cloudinary.uploader.upload(localpath, {
             resource_type: 'auto',
-            folder: `booklist/${folderName}`,
+            folder: `book/${folderName}`,
             use_filename: true,
             unique_filename: false,
             overwrite: true,

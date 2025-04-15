@@ -14,7 +14,7 @@ const authController = new AuthController();
 router.post("/sign-up", Validator.validate(CreateUserDto), authController.create);
 router.post("/sign-in", Validator.validate(SignInDto), authController.signIn);
 router.post("/logout", authMiddleware, authController.logout);
-router.delete("/delete/:userId", authMiddleware, authController.deleteUser);
-router.put("/update/:userId", Validator.validate(UpdateUserDto), authMiddleware, authController.updateUser);
+router.delete("/delete", authMiddleware, authController.deleteUser);
+router.put("/update", Validator.validate(UpdateUserDto), authMiddleware, authController.updateUser);
 
 export default router;

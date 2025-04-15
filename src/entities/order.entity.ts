@@ -9,7 +9,7 @@ interface IOrder extends Document {
 
 const OrderSchema: Schema = new Schema({
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    bookId: { type: Schema.Types.ObjectId, ref: "Product", required: true },
+    bookId: { type: Schema.Types.ObjectId, ref: "Book", required: true },
     quantity: { type: Number, default: 1 },
     orderStatus: { type: String, enum: ["pending", "completed", "cancelled"], default: "pending" }
 },

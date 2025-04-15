@@ -3,7 +3,7 @@ import { JwtHelper } from "../../helpers/jwt.helper";
 import { CreateUserDto } from "./dto/createUser.dto";
 import { Request, Response, NextFunction } from "express";
 import { User } from "../../entities/user.entity"
-import { Role } from "../../entities/role.entity";
+import { Role } from "../../admin/entities/role.entity";
 interface AuthRequest extends Request {
   user?: any;
 }
@@ -138,26 +138,26 @@ public logout = async (req: Request, res: Response, next: NextFunction): Promise
 
 public deleteUser = async (req: AuthRequest, res: Response, next: NextFunction): Promise<any> => {
   try{
-    // req params - userId
     // check if the user is registered or not
     // check if the user is authorized or not
     // delete the user
     //send the response
-    const userId = req.params.userId;
+    // const userId = req.params.userId;
     const token = req.headers.authorization?.split(" ")[2];
     if(!token){
       return res.status(401).json({msg: "Unauthorized: No token provided"});
     }
-    const isUser = await User.findOne({_id: userId});
-    if(!isUser){
-      return res.status(404).json({msg: "User not found"});
-    }
-    const isTokenValid = JwtHelper.decode(token);
+    
+    const isTokenValid = JwtHelper.decode(token) as {id: string};
     if(!isTokenValid){
       return res.status(401).json({msg: "Unauthorized: Invalid or expired token"});
     }
-
-      const user = await User.deleteOne({_id: userId});
+    const isUser = await User.findOne({_id: isTokenValid.id});
+    if(!isUser){
+      return res.status(404).json({msg: "User not found"});
+    }
+      const user = await User.deleteOne({_id: isTokenValid.id});
+      
       if(!user){
         return res.status(404).json({msg: "User is not deleted"});
       }
@@ -172,24 +172,32 @@ public deleteUser = async (req: AuthRequest, res: Response, next: NextFunction):
 public updateUser = async (req: AuthRequest, res: Response, next: NextFunction): Promise<any> => {
   try{
     // req body - firstName, lastName, email, password (not cumplusory)
-    // req params - userId for checking the user
     // check if the user is registered or not
     // check if the user is authorized or not
     // check role is exist in roles database or not
     // encrypt the password and apply validation to password and confirm password
     // send the response
-    const userId = req.params.userId;
     const {firstName, lastName, email, role, password, confirmPassword} = req.body;
 
     if (!firstName && !lastName && !email && !role && (!password || !confirmPassword)) {
       return res.status(400).json({ msg: "At least one of the fields (firstName, lastName, email, role, password, confirmPassword) is required" });
     }
 
-    const user = await User.findOne({_id: userId});
+    const token = req.headers.authorization?.split(" ")[2];
+    if(!token){
+      return res.status(401).json({msg: "Unauthorized: No token provided"});
+    }
+    
+    const isTokenValid = JwtHelper.decode(token) as {id: string};
+    if(!isTokenValid){
+      return res.status(401).json({msg: "Unauthorized: Invalid or expired token"});
+    }
+
+    const user = await User.findOne({_id: isTokenValid.id});
     if(!user){
       return res.status(404).json({msg: "User not found"});
     }
-
+    
     let updatedUser: Partial<User> = {
       firstName: firstName || user.firstName,
       lastName: lastName || user.lastName,
@@ -203,16 +211,22 @@ public updateUser = async (req: AuthRequest, res: Response, next: NextFunction):
       }
       updatedUser.role = roleData._id;
     }
-
     if (password && confirmPassword) {
       if (password !== confirmPassword) {
-      return res.status(400).json({ msg: "Passwords do not match" });
+        return res.status(400).json({ msg: "Passwords do not match" });
       }
       updatedUser.password = await Bcrypt.hash(password);
     }
 
-    const updateUser = await User.findOneAndUpdate(updatedUser);
-    await updateUser.save();
+    const updatedUserData = await User.findByIdAndUpdate(
+      { _id: isTokenValid.id },
+      updatedUser,
+      { new: true, runValidators: true }
+    );
+    if (!updatedUserData) {
+      return res.status(400).json({ msg: "User not updated" });
+    }
+
     return res.status(200).json({msg: "User updated successfully"});
 
   }catch (error){
