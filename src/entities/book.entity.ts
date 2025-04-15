@@ -1,7 +1,7 @@
 import mongoose, {Schema} from "mongoose";
 
-export interface IProduct extends Document {
-    bookName: string;
+export interface IBook extends Document {
+    name: string;
     authorId: number;
     description: string;
     price: number;
@@ -9,12 +9,12 @@ export interface IProduct extends Document {
     categoryId: number;
   }
 
-const ProductSchema: Schema = new Schema({
-    bookName: {
+const BookSchema: Schema = new Schema({
+    name: {
         type: String,
         required: true,
     },
-    authorId: {
+    author: {
         type:Schema.Types.ObjectId,
         ref: "User",
         required: true,
@@ -31,7 +31,7 @@ const ProductSchema: Schema = new Schema({
         type: String,
         required: true,
     },
-    categoryId: {
+    category: {
         type: Schema.Types.ObjectId,
         ref: "Category",
         required: true,
@@ -40,4 +40,4 @@ const ProductSchema: Schema = new Schema({
 { timestamps: true }
 )
 
-export const Product = mongoose.model("Product", ProductSchema);
+export const Book = mongoose.model<IBook>("Book", BookSchema);

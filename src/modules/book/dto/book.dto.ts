@@ -3,7 +3,7 @@ import { IsNotEmpty, IsString } from "class-validator";
 export class PostBookDto {
   @IsString()
   @IsNotEmpty()
-  bookName: string;
+  name: string;
 
   @IsString()
   @IsNotEmpty()
@@ -11,5 +11,9 @@ export class PostBookDto {
 
   @IsString()
   @IsNotEmpty()
-  image: string;
+  category: string;
+
+  @IsString()
+  @IsNotEmpty()
+  price: number;
 }
