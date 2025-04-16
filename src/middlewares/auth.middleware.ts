@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { JwtHelper } from "../helpers/jwt.helper";
+import { JwtHelper } from "@helpers/jwt.helper";
 
 interface AuthRequest extends Request {
   user?: any;
