@@ -1,5 +1,5 @@
 import { IsBoolean, IsEmail, IsEnum, IsIn, IsInt, IsNotEmpty, IsOptional, IsString, IsUrl, Length, Matches, MaxLength } from "class-validator";
-import { Constants } from "../../../config/constants";
+import { Constants } from "../../../configs/constants";
 // import { Constants } from "@configs/constants"
 
 

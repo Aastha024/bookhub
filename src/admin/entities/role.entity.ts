@@ -8,7 +8,7 @@ export interface IRole extends Document {
 
 const RoleSchema: Schema = new Schema(
   {
-    role: { type: String, required: true, enum: ["buyer", "seller"] },
+    role: { type: String, required: true, enum: ["buyer", "seller", "admin"] },
   },
   { timestamps: true }
 );

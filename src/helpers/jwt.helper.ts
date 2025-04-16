@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { Constants } from "../config/constants";
+import { Constants } from "@configs/constants";
 
 export class JwtHelper {
   public static encode<T extends object>(data: T) {

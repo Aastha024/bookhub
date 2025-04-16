@@ -1,14 +1,22 @@
 import { NextFunction, Request, Response } from "express";
 // import postEntity from "../../entities/post.entity";
-import { uploadOnCloudinary, uploadPDFOnCloudinary } from "../../utils/cloudinary";
-import { User } from "../../entities/user.entity";
-import pdfEntity from "../../entities/pdf.entity";
-import { JwtHelper } from "../../helpers/jwt.helper";
-import { Book } from "../../entities/book.entity"
-import { Category } from "../../admin/entities/category.entity";
+import { uploadOnCloudinary, uploadPDFOnCloudinary } from "@utils/cloudinary";
+import { User } from "@entities/user.entity";
+import { JwtHelper } from "@helpers/jwt.helper";
+import { Book } from "@entities/book.entity"
+import { Category } from "@adminEntities/category.entity";
 
 interface AuthRequest extends Request {
   postOwner?: any;
+}
+
+interface BookDetails {
+  name?: string;
+  category?: string;
+  description?: string;
+  coverImage?: string;
+  price?: number;
+  author?: string;
 }
 
 export class ProductController {
@@ -151,37 +159,129 @@ export class ProductController {
   public updateBook = async (req: AuthRequest, res: Response, next: NextFunction): Promise<any> => {
     try{
       // req.body - name, category, description, coverImage, price
-      // access token and get Id based on id find user
+      // req.params - book id
+      // access token and get Id, based on id find user
       // user exists or not
+      // get book id to updatethe data
       // req.file - coverImage
       // upload the image to cloudinary & check whether the image is uploaded or not
       // save the data to database
       // send the response
 
       const { name, category, description, price } = req.body;
+      const bookId = req.params.bookId;
       const coverImage = req.file?.path;
 
       const token = req.header("Authorization")?.split(" ")[2];
+      console.log("🚀 ~ ProductController ~ updateBook= ~ token:", token)
       if (!token) {
         return res.status(401).json({ message: "Unauthorized: No token provided" });
       }
+      const decoded = JwtHelper.decode(token) as { id: string };
+      const user = await User.findById(decoded.id);
+      
+      if(!user) {
+        return res.status(401).json({ message: "Unauthorized: Invalid or expired token" });
+      }
+
+      const book = await Book.findById(bookId);
+      console.log("🚀 ~ ProductController ~ updateBook= ~ book:", book)
+      if(!book) {
+        return res.status(404).json({ message: "Book not found" });
+      }
+
+      // if(user._id.toString() !== book.author.toString()) {
+      //   return res.status(401).json({ message: "Unauthorized: You are not allowed to update this book" });
+      // }
+      
+      if(!user.role){
+        return res.status(403).json({ message: "Unauthorized: Invalid or expired token" });
+      }
+      
+      const updatedBookData: Partial<BookDetails> = {
+        name: name || book.name,
+        category: category || book.category,
+        description: description || book.description,
+        price: price || book.price
+      }
+      console.log("🚀 ~ ProductController ~ updateBook= ~ updatedBookData:", updatedBookData)
+      
+      if(coverImage){
+        const uploadResult = await uploadOnCloudinary(coverImage, `coverImage/${user._id}`);
+        if(!uploadResult) {
+          return res.status(500).json({ message: "Image upload on cloudinary failed" });
+        }
+        updatedBookData.coverImage = uploadResult.secure_url;
+      }
+
+      const updatedBookDetails = await Book.findByIdAndUpdate(
+        { _id: bookId },
+        updatedBookData,
+        { new: true, runValidators: true }
+      );
+      console.log("🚀 ~ ProductController ~ updateBook= ~ updatedBookDetails:", updatedBookDetails)
+
+      if(!updatedBookDetails) {
+        return res.status(404).json({ message: "Book is not updated" });
+      }
+
+      return res.status(200).json({
+        message: "Book updated successfully",
+        book: updatedBookDetails,
+      });
+
+
+    }catch (error) {
+      console.error("Error updating book:", error);
+      next(error);
+    }
+  }
+
+  public deleteBook = async (req: AuthRequest, res: Response, next: NextFunction): Promise<any> => {
+    try{
+      // req.params - book id
+      // access token and get Id, based on id find user
+      // user exists or not
+      // get book id to delete the data
+      // check if the book is present or not
+      // delete the book
+      // send the response
+
+      const bookId = req.params.bookId;
+      const token = req.header("Authorization")?.split(" ")[2];
+
+      if (!token) {
+        return res.status(401).json({ message: "Unauthorized: No token provided" });
+      }
+
       const decoded = JwtHelper.decode(token) as { id: string };
       const user = await User.findById(decoded.id);
       if(!user) {
         return res.status(401).json({ message: "Unauthorized: Invalid or expired token" });
       }
 
-      const updatedCoverImage = await uploadOnCloudinary(coverImage, `coverImage/${user._id}`);
-      if(!updatedCoverImage) {
-        return res.status(500).json({ message: "Image upload on cloudinary failed" });
+      const book = await Book.findById(bookId);
+
+      if(!book) {
+        return res.status(404).json({ message: "Book not found" });
       }
 
-      const updatedBookData = {
-        // name: name || user.name,
-        // category: category || user.category,
+      if(user._id.toString() !== book.author.toString()) {
+        return res.status(401).json({ message: "Unauthorized: You are not allowed to delete this book" });
       }
+
+      const deletedBook = await Book.findByIdAndDelete(bookId);
+      if(!deletedBook) {
+        return res.status(404).json({ message: "Book is not deleted" });
+      }
+
+      return res.status(200).json({
+        message: "Book deleted successfully",
+        book: deletedBook,
+      });
+
     }catch (error) {
-      console.error("Error updating book:", error);
+      console.error("Error deleting book:", error);
       next(error);
     }
   }

@@ -1,6 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
-import connectDB from "./config/db";
+import connectDB from "./configs/db";
 import bodyParser from "body-parser";
 import authRoute from "./modules/auth/auth.route";
 import bookRoute from "./modules/book/book.route";

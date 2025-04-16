@@ -2,11 +2,11 @@ import mongoose, {Schema} from "mongoose";
 
 export interface IBook extends Document {
     name: string;
-    authorId: number;
+    author: number;
     description: string;
     price: number;
     coverImage: string;
-    categoryId: number;
+    category: number;
   }
 
 const BookSchema: Schema = new Schema({

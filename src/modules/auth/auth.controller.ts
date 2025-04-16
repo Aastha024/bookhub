@@ -1,14 +1,13 @@
-import { Bcrypt } from "../../helpers/bcrypt.helper";
-import { JwtHelper } from "../../helpers/jwt.helper";
-import { CreateUserDto } from "./dto/createUser.dto";
 import { Request, Response, NextFunction } from "express";
-import { User } from "../../entities/user.entity"
-import { Role } from "../../admin/entities/role.entity";
+import { Bcrypt } from "@helpers/bcrypt.helper";
+import { JwtHelper } from "@helpers/jwt.helper";
+import { User } from "@entities/user.entity";
+import { Role } from "@adminEntities/role.entity";
 interface AuthRequest extends Request {
   user?: any;
 }
 
-interface User {
+interface UserDetails {
   firstName?: string
   lastName?: string
   email?: string
@@ -198,7 +197,7 @@ public updateUser = async (req: AuthRequest, res: Response, next: NextFunction):
       return res.status(404).json({msg: "User not found"});
     }
     
-    let updatedUser: Partial<User> = {
+    let updatedUser: Partial<UserDetails> = {
       firstName: firstName || user.firstName,
       lastName: lastName || user.lastName,
       email: email || user.email,

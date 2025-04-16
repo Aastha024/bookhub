@@ -11,14 +11,14 @@
     "allowJs": true,
     "noImplicitAny": true,
     "paths": {
-      // "@entities": ["./entities"],
-      // "@helpers": ["./helpers"],
-      "@types": ["./types"],
-      // "@modules": ["./modules"],
-      // "@middlewares": ["./middlewares"],
-      // "@modules/*": ["./modules/*"],
-      "@configs": ["./configs"],
-      // "@acl": ["./acl"]
+      "@entities/*": ["entities/*"],
+      "@helpers/*": ["helpers/*"],
+      "@types/*": ["types/*"],
+      "@middlewares/*": ["middlewares/*"],
+      "@configs/*": ["configs/*"],
+      "@acl/*": ["admin/acl/*"],
+      "@adminEntities/*": ["admin/entities/*"],
+      "@utils/*": ["utils/*"],
     }
   },
   "emitDecoratorMetadata": true,

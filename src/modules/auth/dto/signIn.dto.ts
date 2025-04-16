@@ -1,5 +1,5 @@
 import { IsEmail, IsNotEmpty, IsString, MaxLength } from "class-validator";
-import { Constants } from "../../../config/constants";
+import { Constants } from "../../../configs/constants";
 
 export class SignInDto {
   @IsString()
