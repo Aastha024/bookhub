@@ -63,7 +63,7 @@ export class AuthController {
       
       const RegistetedUser = new User(user);
       await RegistetedUser.save();
-      const token = JwtHelper.encode({ id: RegistetedUser.id });
+      const token = JwtHelper.encode({ id: RegistetedUser.id, role: RegistetedUser.role });
 
 
       return res.status(201).json({ msg: "User created successfully", token });
@@ -106,7 +106,7 @@ public signIn = async (req: Request, res: Response, next: NextFunction): Promise
       role: user.role,
     }
 
-    const token = JwtHelper.encode({ id: user.id });
+    const token = JwtHelper.encode({ id: user.id, role: user.role });
     return res.status(200).json({ msg: "User signed in successfully", token, user: userObj });
   } catch (error) {
     console.error("Sign-in error:", error);

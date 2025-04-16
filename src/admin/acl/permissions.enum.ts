@@ -1,0 +1,23 @@
+export enum Permissions {
+    userSignup = "user:Signup",
+    userLogin = "user:Login",
+    userLogout = "user:Logout",
+    GetUser = "user:GetUser",
+    UpdateUser = "user:UpdateUser",
+    DeleteUser = "user:DeleteUser",
+    GetCategory = "category:GetCategory",
+    CreateCategory = "category:CreateCategory",
+    UpdateCategory = "category:UpdateCategory",
+    DeleteCategory = "category:DeleteCategory",
+    GetBook = "book:GetBook",
+    GetBookById = "book:GetBookById",
+    CreateBook = "book:CreateBook",
+    UpdateBook = "book:UpdateBook",
+    DeleteBook = "book:DeleteBook",
+    GetRole = "role:GetRole",
+    bookSearch = "book:Search",
+    addToCart = "cart:AddToCart",
+    removeFromCart = "cart:RemoveFromCart",
+    getCart = "cart:GetCart",
+  }
+  

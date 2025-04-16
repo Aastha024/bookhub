@@ -7,3 +7,9 @@ export interface TRequest<T> extends Request {
 
 // TResponse is an alias for Express Response.
 export type TResponse = Response;
+
+export enum Roles {
+  Admin = "admin",
+  Buyer = "buyer",
+  Seller = "seller",
+}
