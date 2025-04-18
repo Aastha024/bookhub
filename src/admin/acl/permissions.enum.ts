@@ -5,6 +5,7 @@ export enum Permissions {
     CreateCategory = "category:CreateCategory",
     UpdateCategory = "category:UpdateCategory",
     DeleteCategory = "category:DeleteCategory",
+    GetCategory = "category:GetCategory",
     GetBookById = "book:GetBookById",
     CreateBook = "book:CreateBook",
     UpdateBook = "book:UpdateBook",

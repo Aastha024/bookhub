@@ -9,6 +9,6 @@ const router = Router();
 const categoryController = new CategoryController();
 
 router.post("/create-category", Validator.validate(categoryDto), acl(Permissions.CreateCategory), categoryController.createCategory);
-router.get("/get-category", categoryController.getCategory);
+router.get("/get-category", acl(Permissions.GetCategory), categoryController.getCategory);
 
 export default router;

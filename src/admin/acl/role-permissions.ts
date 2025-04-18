@@ -15,6 +15,7 @@ export const getRolePermissions = () => {
     [Permissions.CreateCategory]: [Roles.Admin],
     [Permissions.UpdateCategory]: [Roles.Admin],
     [Permissions.DeleteCategory]: [Roles.Admin],
+    [Permissions.GetCategory]: [Roles.Admin, Roles.Seller],
     [Permissions.GetBookById]: [Roles.Seller],
     [Permissions.CreateBook]: [Roles.Seller],
     [Permissions.UpdateBook]: [Roles.Admin, Roles.Seller],
