@@ -5,6 +5,8 @@ import { User } from "@entities/user.entity";
 import { JwtHelper } from "@helpers/jwt.helper";
 import { Book } from "@entities/book.entity"
 import { Category } from "@adminEntities/category.entity";
+import { UserBook } from "@entities/userBook.entity";
+import mongoose from "mongoose";
 
 interface AuthRequest extends Request {
   postOwner?: any;
@@ -42,7 +44,6 @@ export class ProductController {
       }
       
       const token = req.header("Authorization")?.split(" ")[2];
-      console.log("🚀 ~ ProductController ~ token:", req.header("Authorization"))
 
       if (!token) {
         return res.status(401).json({ message: "Unauthorized: No token provided" });
@@ -61,10 +62,7 @@ export class ProductController {
       if(!user) {
         return res.status(401).json({ message: "Unauthorized: Invalid or expired token" });
       }
-      // add it as middleware or permissions
-      // if(user.role !== "seller") {
-      //   return res.status(401).json({ message: "User must has buyer role" });
-      // }
+      
        if (!req.file) {
         return res.status(400).json({ message: "Image upload failed" });
       }
@@ -85,6 +83,15 @@ export class ProductController {
 
       const postData = new Book(post);
       await postData.save();
+
+      const UserBookData = {
+        user: user._id,
+        book: postData._id,
+      }
+
+      const userBooks = new UserBook(UserBookData);
+      await userBooks.save();
+
       return res.status(201).json({
         message: "Post created successfully",
         post: postData,
@@ -114,7 +121,29 @@ export class ProductController {
           return res.status(401).json({ message: "Unauthorized: Invalid or expired token" });
         }
 
-        const books = await Book.find({ author: userId }).populate("author", "name email");
+        // const books = await Book.find({ author: userId }).populate("author", "name email");
+        const books = await UserBook.aggregate([
+          {
+            $match: { user: new mongoose.Types.ObjectId(userId) } // step 1: filter by user
+          },
+          {
+            $lookup: {
+              from: "books",               // step 2: join with books collection
+              localField: "book",        // from userbook
+              foreignField: "_id",         // match book._id
+              as: "userPosts"
+            }
+          },
+          {
+            $unwind: "$userPosts" // step 3: unwind the array to get individual book documents
+          },
+          {
+            $group: {
+              _id: "$user", // group by user ID
+              userPosts: { $push: "$userPosts" } // collect all books in an array
+            }
+          }
+        ])
 
         if(!books) {
             return res.status(404).json({ message: "Post not found" });
@@ -173,7 +202,6 @@ export class ProductController {
       const coverImage = req.file?.path;
 
       const token = req.header("Authorization")?.split(" ")[2];
-      console.log("🚀 ~ ProductController ~ updateBook= ~ token:", token)
       if (!token) {
         return res.status(401).json({ message: "Unauthorized: No token provided" });
       }
@@ -185,7 +213,6 @@ export class ProductController {
       }
 
       const book = await Book.findById(bookId);
-      console.log("🚀 ~ ProductController ~ updateBook= ~ book:", book)
       if(!book) {
         return res.status(404).json({ message: "Book not found" });
       }
@@ -204,7 +231,6 @@ export class ProductController {
         description: description || book.description,
         price: price || book.price
       }
-      console.log("🚀 ~ ProductController ~ updateBook= ~ updatedBookData:", updatedBookData)
       
       if(coverImage){
         const uploadResult = await uploadOnCloudinary(coverImage, `coverImage/${user._id}`);
@@ -219,7 +245,6 @@ export class ProductController {
         updatedBookData,
         { new: true, runValidators: true }
       );
-      console.log("🚀 ~ ProductController ~ updateBook= ~ updatedBookDetails:", updatedBookDetails)
 
       if(!updatedBookDetails) {
         return res.status(404).json({ message: "Book is not updated" });
@@ -285,45 +310,4 @@ export class ProductController {
       next(error);
     }
   }
-
-// create an endpoint to upload pdf on cloudinary (practice purpose)
-//   public createPdf = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
-//     try {
-
-//       const files = req.files as MulterFiles;
-//       console.log("🚀 ~ BookController ~ createPdf= ~ files:", files)
-//       const pdfFile = files['pdf']?.[0].path;
-//       console.log("🚀 ~ BookController ~ createPdf= ~ pdfFile:", pdfFile)
-//       const pdfFiles = files['pdfs'];
-
-//       if (!req.files) {
-//         return res.status(400).json({ message: "PDF upload failed" });
-//       }
-
-//       const uploadResult = await uploadPDFOnCloudinary(pdfFile);
-//       const uploadedPdfFiles = await Promise.all(
-//         pdfFiles.map(file => uploadPDFOnCloudinary(file.path))
-//       );
-//       console.log("🚀 ~ BookController ~ createPdf= ~ uploadedPdfFiles:", uploadedPdfFiles)
-
-//       if (!uploadResult) {
-//         return res.status(500).json({ message: "PDF upload on cloudinary failed" });
-//       }
-
-//       const newPdf = {
-//         pdf: `${uploadResult.secure_url}`,
-//         pdfs: uploadedPdfFiles.map((result: any) => result.secure_url),
-//       };
-//       const post = new pdfEntity(newPdf);
-//       await post.save();
-
-//       return res.status(201).json({
-//         message: "PDF created successfully",
-//         book: newPdf,
-//       });
-//     } catch (error) {
-//       console.error("Error creating PDF:", error);
-//       next(error);
-//     }
-//   }
 }

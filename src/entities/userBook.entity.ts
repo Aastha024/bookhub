@@ -2,11 +2,8 @@ import mongoose, { Schema, Document } from "mongoose";
 
 export interface IUserBook extends Document {
   _id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  role: "buyer" | "seller";
+  user: number;
+  book: number;
 }
 
 const UserBookSchema: Schema = new Schema(
@@ -16,9 +13,9 @@ const UserBookSchema: Schema = new Schema(
         ref: "User",
         required: true,
       },
-    role: {
+    book: {
       type: Schema.Types.ObjectId,
-      ref: "Role",
+      ref: "Book",
       required: true,
     },
   },
