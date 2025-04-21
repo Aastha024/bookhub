@@ -19,10 +19,7 @@ const PORT = process.env.PORT || 5000;
 
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("Hello, MongoDB with TypeScript!");
-});
-app.use("/api/auth", authRoute); 
+app.use("/auth", authRoute); 
 app.use("/book", bookRoute)
 app.use("/admin", roleRoute)
 app.use("/admin/category", categoryRoute)

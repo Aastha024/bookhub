@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 // import postEntity from "../../entities/post.entity";
-import { uploadOnCloudinary, uploadPDFOnCloudinary } from "@utils/cloudinary";
+import { deleteOnCloudinary, uploadOnCloudinary, uploadPDFOnCloudinary } from "@utils/cloudinary";
 import { User } from "@entities/user.entity";
 import { JwtHelper } from "@helpers/jwt.helper";
 import { Book } from "@entities/book.entity"
@@ -78,7 +78,6 @@ export class ProductController {
         description,
         price: parseFloat(price),
         coverImage: uploadResult.secure_url,
-        author: user._id,
       }
 
       const postData = new Book(post);
@@ -164,7 +163,7 @@ export class ProductController {
         console.error("Error fetching posts:", error);
         next(error);
     }
-}
+  }
 
   public getAllBooks = async (req: AuthRequest, res: Response, next: NextFunction): Promise<any> => {
     try{
@@ -287,12 +286,21 @@ export class ProductController {
 
       const book = await Book.findById(bookId);
 
-      if(!book) {
-        return res.status(404).json({ message: "Book not found" });
+      if (book.coverImage) {
+        const publicId = book.coverImage
+          .split("/")
+          .slice(7)
+          .join("/")
+          .replace(/\.[^/.]+$/, ""); // Remove file extension
+
+        const deleteImage = await deleteOnCloudinary(publicId);
+        if (!deleteImage) {
+          return res.status(500).json({ message: "Failed to delete image from Cloudinary" });
+        }
       }
 
-      if(user._id.toString() !== book.author.toString()) {
-        return res.status(401).json({ message: "Unauthorized: You are not allowed to delete this book" });
+      if(!book) {
+        return res.status(404).json({ message: "Book not found" });
       }
 
       const deletedBook = await Book.findByIdAndDelete(bookId);
