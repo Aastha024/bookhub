@@ -48,4 +48,58 @@ export class CategoryController {
             next(err);
         }
     }
+
+    public updateCategory = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+        try{
+            //req body - name
+            // req parmas - id
+            // check category already exists if not then then return 
+            // update category
+            // return response
+
+            const { name } = req.body;
+            const categoryId = req.params.id;
+
+            const category = await Category.findOne({ _id: categoryId });
+            if(!category){
+                return res.status(400).json({ msg: "Category not found" });
+            }
+
+            const categoryExist = await Category.findOne({ name: name });
+            if(categoryExist){
+                return res.status(400).json({ msg: "Category already exists" });
+            }
+         
+            const updatedCategory = await Category.findByIdAndUpdate({ _id: categoryId }, {name: name},  { new: true, runValidators: true });
+
+            return res.status(200).json({ msg: "Category updated successfully", category: updatedCategory });
+          
+        }catch (err){
+            console.error("Update role error:", err);
+            next(err);
+        }
+    }
+
+    public deleteCategory = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+        try{
+            // req params - id
+            // check if category exists
+            // delete category
+            // return response
+
+            const categoryId = req.params.id;
+            const category = await Category.findOne({ _id: categoryId });
+
+            if(!category){
+                return res.status(400).json({ msg: "Category not found" });
+            }
+
+            const deletedCategory = await Category.findByIdAndDelete({ _id: categoryId });
+
+            return res.status(200).json({ msg: "Category deleted successfully", category: deletedCategory });
+        }catch (error) {
+            console.error("Delete role error:", error);
+            next(error);
+        }
+    }
 }

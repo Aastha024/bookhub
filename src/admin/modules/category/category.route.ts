@@ -10,5 +10,7 @@ const categoryController = new CategoryController();
 
 router.post("/create-category", Validator.validate(categoryDto), acl(Permissions.CreateCategory), categoryController.createCategory);
 router.get("/get-category", acl(Permissions.GetCategory), categoryController.getCategory);
+router.put("/update-category/:id", Validator.validate(categoryDto), acl(Permissions.UpdateCategory), categoryController.updateCategory);
+router.delete("/delete-category/:id", acl(Permissions.DeleteCategory), categoryController.deleteCategory);
 
 export default router;
