@@ -170,7 +170,7 @@ export class ProductController {
       // fecth all books
       // response in array format
 
-      const books = await Book.find().populate("author", "name email");
+      const books = await Book.find();
       if (!books) {
         return res.status(404).json({ message: "No books found" });
       }
