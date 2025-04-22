@@ -7,6 +7,7 @@ import bookRoute from "./modules/book/book.route";
 import roleRoute from "./admin/modules/role/role.route"
 import miscRoute from "./modules/auth/misc/misc.route";
 import categoryRoute from "./admin/modules/category/category.route";
+import userRoute from "./admin/modules/user/user.route";
 import 'module-alias/register';
 
 dotenv.config();
@@ -25,6 +26,7 @@ app.use("/auth", authRoute);
 app.use("/book", bookRoute)
 app.use("/admin", roleRoute)
 app.use("/admin/category", categoryRoute)
+app.use("/admin/user", userRoute)
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
