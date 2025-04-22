@@ -19,6 +19,7 @@
       "@acl/*": ["admin/acl/*"],
       "@adminEntities/*": ["admin/entities/*"],
       "@utils/*": ["utils/*"],
+      "@misc/*": ["misc/*"],
     }
   },
   "emitDecoratorMetadata": true,

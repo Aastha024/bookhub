@@ -1,4 +1,4 @@
-import { Roles } from "../../../types/types";
+import { Roles } from "../types/types";
 import { Request, Response, NextFunction } from "express";
 
 export class MiscController {

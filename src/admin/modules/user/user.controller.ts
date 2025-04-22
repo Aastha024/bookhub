@@ -38,7 +38,7 @@ export class UserController {
 
     public updateUserProfile = async (req: Request, res: Response, next: NextFunction): Promise<any> => { //pending
         try{
-            //req body - name
+            //req body - firstName, lastName, role, 
             // req parmas - id
             // check category already exists if not then then return 
             // update category
