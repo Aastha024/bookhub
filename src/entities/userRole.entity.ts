@@ -1,25 +1,25 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-export interface IUserBook extends Document {
+export interface IUserRole extends Document {
   _id: string;
   userId: number;
-  bookId: number;
+  roleId: number;
 }
 
-const UserBookSchema: Schema = new Schema(
+const UserRoleSchema: Schema = new Schema(
   {
     userId: {
         type: Schema.Types.ObjectId,
         ref: "User",
         required: true,
       },
-    bookId: {
+    roleId: {
       type: Schema.Types.ObjectId,
-      ref: "Book",
+      ref: "Role",
       required: true,
     },
   },
   { timestamps: true } 
 );
 
-export const UserBook =  mongoose.model<IUserBook>("UserBook", UserBookSchema);
+export const UserRole =  mongoose.model<IUserRole>("UserRole", UserRoleSchema);

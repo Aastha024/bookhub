@@ -84,8 +84,8 @@ export class ProductController {
       await postData.save();
 
       const UserBookData = {
-        user: user._id,
-        book: postData._id,
+        userId: user._id,
+        bookId: postData._id,
       }
 
       const userBooks = new UserBook(UserBookData);
@@ -128,7 +128,7 @@ export class ProductController {
           {
             $lookup: {
               from: "books",               // step 2: join with books collection
-              localField: "book",        // from userbook
+              localField: "bookId",        // from userbook
               foreignField: "_id",         // match book._id
               as: "userPosts"
             }
@@ -216,13 +216,6 @@ export class ProductController {
         return res.status(404).json({ message: "Book not found" });
       }
 
-      // if(user._id.toString() !== book.author.toString()) {
-      //   return res.status(401).json({ message: "Unauthorized: You are not allowed to update this book" });
-      // }
-      
-      if(!user.role){
-        return res.status(403).json({ message: "Unauthorized: Invalid or expired token" });
-      }
       
       const updatedBookData: Partial<BookDetails> = {
         name: name || book.name,

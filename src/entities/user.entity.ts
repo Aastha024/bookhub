@@ -30,7 +30,6 @@ export interface IUser extends Document {
   lastName: string;
   email: string;
   password: string;
-  role: "buyer" | "seller";
 }
 
 const UserSchema: Schema = new Schema(
@@ -39,20 +38,6 @@ const UserSchema: Schema = new Schema(
     lastName: { type: String, required: true },
     email: { type: String, required: true, unique: true, lowercase: true, trim: true},
     password: { type: String, required: true },
-    role: {
-      type: Schema.Types.ObjectId,
-      ref: "Role",
-      required: true,
-    },
-    products: {
-      type: Schema.Types.ObjectId,
-      ref: "Product",
-      // required: true,
-    },
-    jwtToken: {
-      type: String,
-      required: false,
-    }
   },
   { timestamps: true } 
 );

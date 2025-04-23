@@ -30,8 +30,8 @@ export const acl = (requiredPermission: Permissions) => {
 
     const userRole = await Role.findById(user.role);
 
-    const permissions = rolePermissionsMap.find(role => role.role === userRole.role)?.permissions || [];
-    console.log("🚀 ~ return ~ permissions:", permissions)
+    const permissions = rolePermissionsMap.find(role => role.role === userRole.slug)?.permissions || [];
+    
     if (!permissions.includes(requiredPermission)) {
       return res.status(403).json({ code: 403, reason: "Unauthorized: You are not allowed to access this route"  });
     }

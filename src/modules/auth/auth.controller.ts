@@ -3,6 +3,7 @@ import { Bcrypt } from "@helpers/bcrypt.helper";
 import { JwtHelper } from "@helpers/jwt.helper";
 import { User } from "@entities/user.entity";
 import { Role } from "@adminEntities/role.entity";
+import { UserRole } from "@entities/userRole.entity";
 interface AuthRequest extends Request {
   user?: any;
 }
@@ -39,7 +40,7 @@ export class AuthController {
         return res.status(400).json({ msg: "User already exists" });
       }
      
-      const roleExist = await Role.findOne({ role: role });
+      const roleExist = await Role.findOne({ slug: role });
       if(!roleExist){
         return res.status(400).json({ msg: "Role does not exist" });
       }
@@ -57,13 +58,20 @@ export class AuthController {
         lastName: lastName,
         email: email,
         password: encryptPassword,
-        role: roleExist._id,
       }
       
       const RegistetedUser = new User(user);
       await RegistetedUser.save();
-      const token = JwtHelper.encode({ id: RegistetedUser.id, role: RegistetedUser.role });
+      
+      const userRoleData = {
+        userId: RegistetedUser._id,   
+        roleId: roleExist._id,
+      }
 
+      const userRole = new UserRole(userRoleData);
+      await userRole.save();
+
+      const token = JwtHelper.encode({ id: RegistetedUser.id, role: roleExist.slug });
 
       return res.status(201).json({ msg: "User created successfully", token });
     } catch (error) {
@@ -102,10 +110,29 @@ public signIn = async (req: Request, res: Response, next: NextFunction): Promise
       firstName: user.firstName,
       lastName: user.lastName,
       email: email,
-      role: user.role,
     }
 
-    const token = JwtHelper.encode({ id: user.id, role: user.role });
+    const userRole = await UserRole.aggregate([
+      { $match: { userId: user._id } },
+      {
+        $lookup: {
+          from: "roles",                // collection name to join
+          localField: "roleId",         // field in UserRole
+          foreignField: "_id",          // field in Role
+          as: "role"
+        }
+      },
+      { $unwind: "$role" },             // convert role array into an object
+      {
+        $project: {
+          userId: 1,
+          roleId: 1,
+          "role.slug": 1
+        }
+      }
+    ]);
+
+    const token = JwtHelper.encode({ id: user.id, role: userRole[0]?.role.slug });
     return res.status(200).json({ msg: "User signed in successfully", token, user: userObj });
   } catch (error) {
     console.error("Sign-in error:", error);
