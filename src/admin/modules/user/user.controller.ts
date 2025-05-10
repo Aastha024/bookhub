@@ -3,6 +3,7 @@ import { Category } from "../../entities/category.entity";
 import { Role } from "../../entities/role.entity";
 // import {Role} from "@entities/role.entity";
 import { NextFunction, Request, Response } from "express";
+import { UserRole } from "@entities/userRole.entity";
 
 export class UserController {
     public getUser = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
@@ -40,26 +41,41 @@ export class UserController {
         try{
             //req body - firstName, lastName, role, 
             // req parmas - id
-            // check category already exists if not then then return 
-            // update category
+            // check user already exists if not then then return 
+            // update user
             // return response
 
-            const { name } = req.body;
-            const categoryId = req.params.id;
+            const { firstName, lastName, role } = req.body;
+            const userId = req.params.id;
 
-            const category = await Category.findOne({ _id: categoryId });
-            if(!category){
-                return res.status(400).json({ msg: "Category not found" });
+            const user = await User.findOne({ _id: userId });
+            if(!user){
+                return res.status(400).json({ msg: "User not found" });
             }
 
-            const categoryExist = await Category.findOne({ name: name });
-            if(categoryExist){
-                return res.status(400).json({ msg: "Category already exists" });
+            const updatedUserobj = {
+                firstName: firstName || user.firstName,
+                lastName: lastName || user.lastName,
             }
          
-            const updatedCategory = await Category.findByIdAndUpdate({ _id: categoryId }, {name: name},  { new: true, runValidators: true });
+            const updatedUser = await User.findByIdAndUpdate({ _id: userId }, updatedUserobj,  { new: true, runValidators: true });
 
-            return res.status(200).json({ msg: "Category updated successfully", category: updatedCategory });
+            console.log("🚀 ~ UserController ~ updateUserProfile= ~ updatedUser:", updatedUser)
+            if(role){
+                const roleExist = await Role.findOne({ slug: role });
+                if(!roleExist){
+                    return res.status(400).json({ msg: "Role does not exist" });
+                }
+                console.log("🚀 ~ UserController ~ updateUserProfile= ~ roleExist:", roleExist)
+                const userRoleData = { 
+                    roleId: roleExist._id,
+                }
+
+                await UserRole.findOneAndUpdate({ userId: user._id }, userRoleData, { new: true, runValidators: true });
+                
+            }
+
+            return res.status(200).json({ msg: "User updated successfully", user: updatedUser });
           
         }catch (err){
             console.error("Update role error:", err);

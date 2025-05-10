@@ -28,9 +28,14 @@ export const acl = (requiredPermission: Permissions) => {
       return res.status(403).json({ code: 403, reason: "Unauthorized: Invalid or expired token"  });
     }
 
-    const userRole = await Role.findById(user.role);
+    const userRole = await Role.findOne({slug: user.role});
+    
+    console.log("🚀 ~ return ~ userRole:", userRole)
+    console.log("🚀 ~ return ~ userRole slug:", userRole.slug)
 
     const permissions = rolePermissionsMap.find(role => role.role === userRole.slug)?.permissions || [];
+    console.log("🚀 ~ return ~ rolePermissionsMap:", rolePermissionsMap)
+    console.log("🚀 ~ return ~ permissions:", permissions)
     
     if (!permissions.includes(requiredPermission)) {
       return res.status(403).json({ code: 403, reason: "Unauthorized: You are not allowed to access this route"  });
